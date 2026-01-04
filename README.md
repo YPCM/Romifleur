@@ -20,6 +20,7 @@
     *   **Clean List**: Option to hide Demos, Betas, and Prototypes automatically.
 *   **Download Queue**: Add multiple games from different consoles to a persistent queue.
 *   **Batch Downloading**: Download your entire queue in parallel with a single click.
+*   **Custom Download Path**: Choose exactly where your ROMs go (e.g., directly to an SD card). The app automatically creates standard console folders.
 *   **Deduplication**: Automatically identifies and prioritizes the best version of a game (e.g., latest revision, preferred region).
 
 ### How to Use
@@ -29,7 +30,9 @@
 4.  **Select Games**: Click the checkbox `[ ]` next to games or use the "Select All" button.
 5.  **Queue**: Click **"Add to Queue ➡️"** to send them to the download panel on the right.
 6.  **Download**: Click **"Start Downloads 🚀"** in the right panel to begin.
-7.  **Play**: Click "Open ROMs Folder" to access your downloaded files, automatically organized by console.
+6.  **Download**: Click **"Start Downloads 🚀"** in the right panel to begin.
+7.  **(Optional)** Click **"Settings ⚙️"** to change the download destination folder.
+8.  **Play**: Click "Open ROMs Folder" to access your downloaded files, automatically organized by console.
 
 ### Development & Compilation
 **Requirements:**
@@ -72,6 +75,7 @@ The output file will be located in the `dist/` folder.
     *   **Liste Propre** : Option pour masquer automatiquement les Démos, Bêtas et Prototypes.
 *   **File d'Attente** : Ajoutez plusieurs jeux provenant de consoles différentes dans une liste d'attente globale.
 *   **Téléchargement par Lot** : Lancez le téléchargement de toute votre file d'attente en parallèle.
+*   **Dossier Personnalisé** : Choisissez où vos ROMs sont téléchargées (ex: directement sur une carte SD). L'app gère les sous-dossiers automatiquement.
 *   **Dédoublonnage** : Identifie et priorise automatiquement la meilleure version d'un jeu (ex: dernière révision, région préférée).
 
 ### Utilisation
@@ -81,7 +85,9 @@ The output file will be located in the `dist/` folder.
 4.  **Sélectionner** : Cochez la case `[ ]` à côté des jeux ou utilisez le bouton "Select All".
 5.  **Ajouter à la File** : Cliquez sur **"Add to Queue ➡️"** pour les envoyer dans le panneau de droite.
 6.  **Télécharger** : Cliquez sur **"Start Downloads 🚀"** dans le panneau de droite pour lancer les téléchargements.
-7.  **Jouer** : Cliquez sur "Open ROMs Folder" pour accéder à vos fichiers, automatiquement triés par console.
+6.  **Télécharger** : Cliquez sur **"Start Downloads 🚀"** dans le panneau de droite pour lancer les téléchargements.
+7.  **(Optionnel)** Cliquez sur **"Settings ⚙️"** pour changer le dossier de destination.
+8.  **Jouer** : Cliquez sur "Open ROMs Folder" pour accéder à vos fichiers, automatiquement triés par console.
 
 ### Développement et Compilation
 **Prérequis :**
