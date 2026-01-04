@@ -17,6 +17,42 @@ class RomManager:
             "exclude": ["(Demo)", "(Beta)", "(Proto)", "(Kiosk)", "(Sample)", "(Unl)"],
             "deduplicate": True
         }
+        self.settings = self._load_settings()
+
+    def _load_settings(self):
+        try:
+            if os.path.exists("settings.json"):
+                with open("settings.json", "r") as f:
+                    return json.load(f)
+        except Exception as e:
+            print(f"Error loading settings: {e}")
+        return {"roms_path": "ROMs"} # Default
+
+    def save_settings(self):
+        try:
+            with open("settings.json", "w") as f:
+                json.dump(self.settings, f, indent=4)
+        except Exception as e:
+            print(f"Error saving settings: {e}")
+
+    def get_download_path(self):
+        path = self.settings.get("roms_path", "ROMs")
+        # Check if absolute or relative
+        if not os.path.isabs(path):
+            path = os.path.abspath(path)
+            
+        # Check availability (e.g. unplugged SD)
+        if not os.path.exists(path):
+            # Try to create it if it looks like a normal local path
+            try:
+                os.makedirs(path, exist_ok=True)
+            except:
+                # Fallback to local default if drive is missing
+                print(f"Custom path {path} not accessible. Falling back to ./ROMs")
+                default = os.path.abspath("ROMs")
+                os.makedirs(default, exist_ok=True)
+                return default
+        return path
 
     def _load_catalog(self):
         import sys
@@ -176,7 +212,10 @@ class RomManager:
             
             # Use 'folder' from config if available, else console_key
             folder_name = config.get('folder', console_key)
-            save_dir = os.path.join("ROMs", folder_name)
+            
+            # Use dynamic root path
+            root_path = self.get_download_path()
+            save_dir = os.path.join(root_path, folder_name)
             
             os.makedirs(save_dir, exist_ok=True)
             filepath = os.path.join(save_dir, filename)

@@ -69,7 +69,11 @@ class App(ctk.CTk):
         
         # Open Folder Button
         self.open_folder_btn = ctk.CTkButton(self.sidebar, text="Open ROMs Folder", fg_color="#555", command=self._open_roms_folder)
-        self.open_folder_btn.pack(padx=20, pady=(0, 20))
+        self.open_folder_btn.pack(padx=20, pady=(0, 10))
+
+        # Settings Button
+        self.settings_btn = ctk.CTkButton(self.sidebar, text="Settings ⚙️", fg_color="#444", command=self._open_settings)
+        self.settings_btn.pack(padx=20, pady=(0, 20))
         
         # Scrollable list for consoles
         self.console_list_frame = ctk.CTkScrollableFrame(self.sidebar, label_text="Consoles")
@@ -260,6 +264,17 @@ class App(ctk.CTk):
         except Exception as e:
             self.info_label.configure(text=f"Error importing: {e}")
 
+    def _open_settings(self):
+        # Allow user to pick download folder
+        from tkinter import filedialog
+        current = self.manager.settings.get("roms_path", "ROMs")
+        
+        path = filedialog.askdirectory(initialdir=current, title="Select ROMs Destination Folder")
+        if path:
+            self.manager.settings["roms_path"] = path
+            self.manager.save_settings()
+            self.info_label.configure(text=f"Download path set to: {path}")
+
     def _populate_console_list(self):
         consoles = self.manager.get_console_list() 
         consoles.sort(key=lambda x: x[2])
@@ -387,9 +402,12 @@ class App(ctk.CTk):
     # --- New Queue Methods ---
 
     def _open_roms_folder(self):
-        path = os.path.abspath("ROMs")
+        path = self.manager.get_download_path()
         if not os.path.exists(path):
-            os.makedirs(path)
+            try:
+                os.makedirs(path)
+            except:
+                pass
         
         if platform.system() == "Windows":
             os.startfile(path)
