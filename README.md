@@ -54,6 +54,7 @@ Use `:` as separator and `--onedir` might be preferred for some setups, but `--o
 ```bash
 pyinstaller --noconsole --onedir --icon=icon.ico --name Romifleur --add-data "consoles.json:." --add-data "logo-romifleur.png:." --add-data "logo-romifleur-mini.png:." --collect-all customtkinter main.py
 ```
+The output file will be located in the `dist/` folder.
 
 ---
 
@@ -100,8 +101,15 @@ pyinstaller --noconsole --onefile --icon=icon.ico --name Romifleur --add-data "c
 ```
 Le fichier final se trouvera dans le dossier `dist/`.
 
+
 **Compiler pour MacOS (ARM) :**
 Utilisez `:` comme séparateur.
 ```bash
 pyinstaller --noconsole --onedir --icon=icon.ico --name Romifleur --add-data "consoles.json:." --add-data "logo-romifleur.png:." --add-data "logo-romifleur-mini.png:." --collect-all customtkinter main.py
 ```
+Le fichier final se trouvera dans le dossier `dist/`.
+
+---
+
+## Acknowledgements / Remerciements
+*   Thanks to **@mikeflystar** for providing the MacOS (ARM) compilation instructions. / Merci à **@mikeflystar** pour les instructions de compilation MacOS (ARM).
