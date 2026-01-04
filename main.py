@@ -14,7 +14,10 @@ class App(ctk.CTk):
     def __init__(self):
         super().__init__()
         
-        self.title("Romifleur - Ultimate ROM Downloader")
+        self.VERSION = "v1.0.1"
+
+        # Window
+        self.title(f"Romifleur {self.VERSION}")
         self.geometry("1300x700") # Wider for Queue
         
         self.manager = RomManager()

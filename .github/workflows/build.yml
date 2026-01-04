@@ -1,0 +1,50 @@
+name: Build and Release
+
+on:
+  push:
+    branches: [ "main" ]
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+        
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install customtkinter requests beautifulsoup4 pillow pyinstaller py7zr
+        
+    - name: Generate Icon (if missing)
+      run: |
+        python -c "from PIL import Image; import os; img = Image.open('logo-romifleur-mini.png') if os.path.exists('logo-romifleur-mini.png') else Image.new('RGB', (256, 256)); img.save('icon.ico', format='ICO', sizes=[(256, 256)])"
+
+    - name: Build with PyInstaller
+      run: |
+        pyinstaller --noconsole --onefile --icon=icon.ico --name Romifleur --add-data "consoles.json;." --add-data "logo-romifleur.png;." --add-data "logo-romifleur-mini.png;." --collect-all customtkinter main.py
+
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: Romifleur-Windows
+        path: dist/Romifleur.exe
+
+    - name: Create Release
+      if: startsWith(github.ref, 'refs/tags/v')
+      uses: softprops/action-gh-release@v1
+      with:
+        files: dist/Romifleur.exe
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
