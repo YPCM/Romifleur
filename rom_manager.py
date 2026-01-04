@@ -134,19 +134,15 @@ class RomManager:
         score = 0
         file_lower = filename.lower()
         
-        # Region Priority
-        for reg in self.filters["region"]:
-            if reg.lower() in file_lower:
-                score += 5
-                
-        # Revision
-        rev_match = re.search(r'\(Rev\s*(\d+)\)', filename, re.IGNORECASE)
-        if rev_match: score += int(rev_match.group(1)) * 10
-        
-        v_match = re.search(r'\(v(\d+(?:\.\d+)?)\)', filename, re.IGNORECASE)
-        if v_match: 
-            try: score += float(v_match.group(1)) * 10
-            except: pass
+        # Region Preference
+        if "(France)" in filename or "(Fr)" in filename:
+            score += 2
+        elif "(Europe)" in filename:
+            score += 1
+            
+        # Penalize Virtual Console
+        if "Virtual Console" in filename:
+            score -= 50
             
         return score
 

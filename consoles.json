@@ -63,7 +63,7 @@
             "folder": "mastersystem",
             "url": "https://myrient.erista.me/files/No-Intro/Sega%20-%20Master%20System%20-%20Mark%20III/",
             "exts": [".zip", ".7z", ".sms"],
-            "best_games": ["Alex Kidd in Miracle World", "Wonder Boy III", "Phantasy Star", "Sonic the Hedgehog", "Psycho Fox"]
+            "best_games": ["Alex Kidd in Miracle World", "Wonder Boy III: The Dragon's Trap", "Phantasy Star", "Sonic the Hedgehog", "Psycho Fox"]
         },
         "MegaDrive": {
             "name": "Mega Drive / Genesis",
