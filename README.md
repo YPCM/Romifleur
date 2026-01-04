@@ -1,6 +1,6 @@
 # Romifleur
 
-![Romifleur Logo](logo-romifleur-mini.png)
+![Romifleur Logo](logo-romifleur.png)
 
 ---
 
