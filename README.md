@@ -41,12 +41,19 @@
 python main.py
 ```
 
+To build a standalone executable that includes all assets (icons, database), **open a terminal in the project's root directory** and run:
+
 **Compiling to Executable (.exe):**
-To build a standalone executable that includes all assets (icons, database):
 ```bash
 pyinstaller --noconsole --onefile --icon=icon.ico --name Romifleur --add-data "consoles.json;." --add-data "logo-romifleur.png;." --add-data "logo-romifleur-mini.png;." --collect-all customtkinter main.py
 ```
 The output file will be located in the `dist/` folder.
+
+**Compiling for MacOS (ARM):**
+Use `:` as separator and `--onedir` might be preferred for some setups, but `--onefile` usually works too.
+```bash
+pyinstaller --noconsole --onedir --icon=icon.ico --name Romifleur --add-data "consoles.json:." --add-data "logo-romifleur.png:." --add-data "logo-romifleur-mini.png:." --collect-all customtkinter main.py
+```
 
 ---
 
@@ -85,9 +92,16 @@ The output file will be located in the `dist/` folder.
 python main.py
 ```
 
+Pour créer un exécutable autonome incluant toutes les ressources (icônes, base de données), **ouvrez un terminal à la racine du projet** et lancez :
+
 **Compiler en Exécutable (.exe) :**
-Pour créer un exécutable autonome incluant toutes les ressources (icônes, base de données) :
 ```bash
 pyinstaller --noconsole --onefile --icon=icon.ico --name Romifleur --add-data "consoles.json;." --add-data "logo-romifleur.png;." --add-data "logo-romifleur-mini.png;." --collect-all customtkinter main.py
 ```
 Le fichier final se trouvera dans le dossier `dist/`.
+
+**Compiler pour MacOS (ARM) :**
+Utilisez `:` comme séparateur.
+```bash
+pyinstaller --noconsole --onedir --icon=icon.ico --name Romifleur --add-data "consoles.json:." --add-data "logo-romifleur.png:." --add-data "logo-romifleur-mini.png:." --collect-all customtkinter main.py
+```
