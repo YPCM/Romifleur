@@ -127,10 +127,30 @@ class App(ctk.CTk):
         self.tree_frame.grid_columnconfigure(0, weight=1)
         self.tree_frame.grid_rowconfigure(0, weight=1)
         
+        # Scale Treeview for high DPI
+        try:
+            scaling = self._get_window_scaling()
+        except AttributeError:
+            scaling = 1.0
+            
+        font_size = int(14 * scaling)
+        heading_font_size = int(13 * scaling)
+        row_height = int(30 * scaling)
+
         self.style = ttk.Style()
         self.style.theme_use("clam")
-        self.style.configure("Treeview", background="#2b2b2b", fieldbackground="#2b2b2b", foreground="white", borderwidth=0)
-        self.style.configure("Treeview.Heading", background="#1f1f1f", foreground="white", relief="flat")
+        self.style.configure("Treeview", background="#2b2b2b", 
+                            fieldbackground="#2b2b2b", 
+                            foreground="white", 
+                            borderwidth=0,
+                            font=("Arial", font_size),
+                            rowheight=row_height)
+        
+        self.style.configure("Treeview.Heading", 
+                            background="#1f1f1f", 
+                            foreground="white", 
+                            relief="flat",
+                            font=("Arial", heading_font_size, "bold"))
         self.style.map("Treeview", background=[('selected', '#1f538d')])
         
         # Add "Select" column for checkboxes
