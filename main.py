@@ -459,7 +459,7 @@ class App(ctk.CTk):
         self.after(0, lambda: self._update_view_after_load(name))
 
     def _update_view_after_load(self, name):
-        self.info_label.configure(text=f"{name} - {len(self.manager.cache.get(f'{self.selected_category}_{self.selected_console}', []))} files found")
+        # We perform the refresh immediately, which will update the label with correct count
         self._refresh_list()
 
     def _refresh_list(self, *args):
@@ -477,6 +477,10 @@ class App(ctk.CTk):
         
         query = self.search_var.get()
         results = self.manager.search(self.selected_category, self.selected_console, query)
+        
+        # Update Label with filtered count
+        name = self.manager.consoles[self.selected_category][self.selected_console]['name']
+        self.info_label.configure(text=f"{name} - {len(results)} games found")
         
         self._update_game_list(results)
 
@@ -528,11 +532,22 @@ class App(ctk.CTk):
     def _select_all_toggle(self):
         children = self.tree.get_children()
         if not children: return
-        first_val = self.tree.item(children[0], "values")[0]
-        new_val = "☑" if first_val == "☐" else "☐"
-        for item in children:
-            vals = self.tree.item(item, "values")
-            self.tree.item(item, values=(new_val, vals[1], vals[2]))
+        
+        try:
+            first_val = self.tree.item(children[0], "values")[0]
+            new_val = "☑" if first_val == "☐" else "☐"
+            
+            for item in children:
+                try:
+                    vals = self.tree.item(item, "values")
+                    if len(vals) >= 3:
+                        # Construct new tuple, preserving all existing extra columns
+                        new_values = (new_val,) + vals[1:]
+                        self.tree.item(item, values=new_values)
+                except Exception:
+                    continue
+        except Exception as e:
+            print(f"Selection error: {e}")
 
     def _on_search_change(self, *args):
         self._refresh_list()
@@ -621,26 +636,41 @@ class App(ctk.CTk):
 
     def _add_to_queue(self):
         # Identify selected Items
-        checked_items = []
-        for item in self.tree.get_children():
-            vals = self.tree.item(item, "values")
-            if vals[0] == "☑":
-                checked_items.append(vals[2]) # Changed from vals[1] to vals[2] to get filename
+        checked_files = []
         
-        if not checked_items:
+        # Scan tree items
+        children = self.tree.get_children()
+        for item in children:
+            vals = self.tree.item(item, "values")
+            # Val structure: (Select, RA, Name, Status)
+            if vals[0] == "☑":
+                 if len(vals) > 2:
+                    checked_files.append(vals[2])
+        
+        # Selection fallback
+        if not checked_files:
             selected_items = self.tree.selection()
             if selected_items:
-               checked_items = [self.tree.item(i)['values'][2] for i in selected_items] # Changed from vals[1] to vals[2]
+               for i in selected_items:
+                   vals = self.tree.item(i)['values']
+                   if len(vals) > 2:
+                       checked_files.append(vals[2])
         
-        if not checked_items: return
+        if not checked_files: return
     
-        # Add to global queue
+        # Add to global queue (Optimized)
+        existing_filenames = {x[2] for x in self.download_queue}
+        
         count = 0
-        for filename in checked_items:
-            # Check if already in queue
-            if not any(x[2] == filename for x in self.download_queue):
-                self.download_queue.append((self.selected_category, self.selected_console, filename))
+        added_batch = []
+        
+        for filename in checked_files:
+            if filename not in existing_filenames:
+                added_batch.append((self.selected_category, self.selected_console, filename))
+                existing_filenames.add(filename)
                 count += 1
+                
+        self.download_queue.extend(added_batch)
                 
         self._update_queue_ui()
         self.info_label.configure(text=f"Added {count} items to queue.")
