@@ -1,6 +1,7 @@
 
 import customtkinter as ctk
-from tkinter import filedialog
+import customtkinter as ctk
+from tkinter import filedialog, messagebox
 
 class SettingsWindow(ctk.CTkToplevel):
     def __init__(self, master, app_context):
@@ -58,6 +59,14 @@ class SettingsWindow(ctk.CTkToplevel):
         new_path = self.path_entry.get()
         ra_key = self.ra_entry.get().strip()
         
+        # Validation
+        if ra_key:
+            if not self.app.ra_manager.validate_key(ra_key):
+                messagebox.showerror("Invalid API Key", "The RetroAchievements API Key is invalid.\nPlease check it and try again.")
+                self.ra_entry.delete(0, "end")
+                self.ra_entry.focus()
+                return
+
         self.app.config.settings["roms_path"] = new_path
         self.app.config.settings["ra_api_key"] = ra_key
         self.app.config.save_settings()

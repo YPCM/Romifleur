@@ -121,4 +121,26 @@ class RetroAchievementsManager:
             if len(clean_name) > 10 and clean_name in ra_title:
                 return True
                 
+                
         return False
+
+    def validate_key(self, api_key):
+        """Check if the provided API Key is valid."""
+        if not api_key:
+            return False
+            
+        try:
+            # API_GetConsoleIDs is a lightweight component to test auth
+            url = f"{self.BASE_URL}/API_GetConsoleIDs.php"
+            params = {"y": api_key}
+            
+            response = requests.get(url, params=params, timeout=5)
+            response.raise_for_status()
+            
+            data = response.json()
+            # Valid response is a list of Console dictionaries
+            return isinstance(data, list) and len(data) > 0
+            
+        except Exception as e:
+            print(f"Validation Error: {e}")
+            return False
