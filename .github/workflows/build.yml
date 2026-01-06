@@ -35,12 +35,13 @@ jobs:
       - name: Build with PyInstaller
         run: |
           pyinstaller Romifleur.spec
+          mv dist/Romifleur.exe dist/Romifleur-Windows-x86_64.exe
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
           name: Romifleur-Windows
-          path: dist/Romifleur.exe
+          path: dist/Romifleur-Windows-x86_64.exe
 
   build-macos:
     runs-on: macos-14 # Runner Apple Silicon (M1)
@@ -117,13 +118,15 @@ jobs:
           pyinstaller Romifleur.spec
 
       - name: Make executable
-        run: chmod +x dist/Romifleur
+        run: |
+          chmod +x dist/Romifleur
+          mv dist/Romifleur dist/Romifleur-Binary-Linux-x86_64
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
           name: Romifleur-Linux-x86_64
-          path: dist/Romifleur
+          path: dist/Romifleur-Binary-Linux-x86_64
 
       - name: Create AppImage
         run: |
@@ -156,7 +159,7 @@ jobs:
 
           # Move to dist
           mkdir -p dist-appimage
-          mv Romifleur*.AppImage dist-appimage/
+          mv Romifleur*.AppImage dist-appimage/Romifleur-AppImage-Linux-x86_64.AppImage
 
       - name: Upload AppImage
         uses: actions/upload-artifact@v4
@@ -198,9 +201,9 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           files: |
-            dist-windows/Romifleur.exe
+            dist-windows/Romifleur-Windows-x86_64.exe
             dist-macos/Romifleur-macOS-ARM.dmg
-            dist-linux/Romifleur
-            dist-appimage/*.AppImage
+            dist-linux/Romifleur-Binary-Linux-x86_64
+            dist-appimage/Romifleur-AppImage-Linux-x86_64.AppImage
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
