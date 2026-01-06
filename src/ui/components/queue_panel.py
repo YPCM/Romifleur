@@ -108,13 +108,17 @@ class QueuePanel(ctk.CTkFrame):
         )
 
     def _update_progress(self, progress, status):
-        # Called from thread, schedule on main loop? 
-        # CTk usually handles thread safety for value updates, but let's be safe if needed.
-        # Ideally using after() but we are in a component. 
+        # Called from thread, schedule on main loop
+        self.after(0, lambda: self._update_progress_safe(progress, status))
+
+    def _update_progress_safe(self, progress, status):
         self.progress_bar.set(progress)
         self.status_label.configure(text=status)
 
     def _on_complete(self):
+        self.after(0, self._on_complete_safe)
+
+    def _on_complete_safe(self):
         self.start_btn.configure(state="normal", text="Start Downloads 🚀")
         self.progress_bar.pack_forget()
         self.status_label.configure(text="All Downloads Complete!")

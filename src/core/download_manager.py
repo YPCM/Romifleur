@@ -2,6 +2,10 @@
 import threading
 import concurrent.futures
 from .rom_manager import RomManager
+import logging
+
+# Configure logger
+logger = logging.getLogger(__name__)
 
 class DownloadManager:
     def __init__(self, rom_manager: RomManager):
@@ -17,6 +21,7 @@ class DownloadManager:
                 return False
         
         self.queue.append((category, console, filename))
+        logger.info(f"Added to queue: {filename}")
         return True
 
     def remove_from_queue(self, index):
@@ -26,13 +31,15 @@ class DownloadManager:
         return False
 
     def clear_queue(self):
-        self.queue = []
+        with self.lock:
+            self.queue = []
 
     def start_download(self, progress_callback=None, completion_callback=None):
         if not self.queue or self.is_downloading:
             return
 
         self.is_downloading = True
+        logger.info("Starting download batch...")
         
         # Run in a separate thread to not block UI
         threading.Thread(target=self._worker, args=(list(self.queue), progress_callback, completion_callback)).start()
@@ -55,7 +62,11 @@ class DownloadManager:
 
         def download_task(item):
             cat, console, fname = item
-            self.rom_manager.download_file(cat, console, fname, progress_callback=None)
+            success = self.rom_manager.download_file(cat, console, fname, progress_callback=None)
+            if success:
+                logger.info(f"Successfully downloaded: {fname}")
+            else:
+                logger.error(f"Failed to download: {fname}")
             update_overall_progress(True)
             
         with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
@@ -63,5 +74,6 @@ class DownloadManager:
             concurrent.futures.wait(futures)
         
         self.is_downloading = False
+        logger.info("Download batch complete.")
         if completion_callback:
             completion_callback()

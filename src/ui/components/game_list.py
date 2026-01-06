@@ -62,20 +62,45 @@ class GameList(ctk.CTkFrame):
         ctk.CTkButton(self.action_frame, text="Select All", width=100, fg_color="#444", command=self._toggle_select_all).pack(side="right", padx=10)
 
     def _setup_tree(self):
+        # Scale Treeview for high DPI
+        try:
+            scaling = ctk.get_window_scaling() if hasattr(ctk, 'get_window_scaling') else 1.0
+            if scaling == 1.0 and hasattr(self, '_get_window_scaling'): # fallback
+                scaling = self._get_window_scaling()
+        except:
+             scaling = 1.0
+
+        font_size = int(14 * scaling)
+        heading_font_size = int(13 * scaling)
+        row_height = int(30 * scaling)
+        
         style = ttk.Style()
         style.theme_use("clam")
-        style.configure("Treeview", background="#2b2b2b", fieldbackground="#2b2b2b", foreground="white", 
-                        borderwidth=0, rowheight=30, font=("Arial", 12))
-        style.configure("Treeview.Heading", background="#1f1f1f", foreground="white", relief="flat", font=("Arial", 12, "bold"))
+        style.configure("Treeview", background="#2b2b2b", 
+                        fieldbackground="#2b2b2b", 
+                        foreground="white", 
+                        borderwidth=0, 
+                        font=("Arial", font_size),
+                        rowheight=row_height)
+        
+        style.configure("Treeview.Heading", 
+                        background="#1f1f1f", 
+                        foreground="white", 
+                        relief="flat",
+                        font=("Arial", heading_font_size, "bold"))
         style.map("Treeview", background=[('selected', '#1f538d')])
         
+        # Scale column widths
+        select_width = int(40 * scaling)
+        ra_width = int(40 * scaling)
+
         self.tree = ttk.Treeview(self.tree_frame, columns=("Select", "RA", "Name"), show="headings", selectmode="extended")
         self.tree.heading("Select", text="[x]")
         self.tree.heading("RA", text="RA")
         self.tree.heading("Name", text="Game Title")
         
-        self.tree.column("Select", width=40, anchor="center")
-        self.tree.column("RA", width=40, anchor="center")
+        self.tree.column("Select", width=select_width, stretch=False, anchor="center")
+        self.tree.column("RA", width=ra_width, stretch=False, anchor="center")
         self.tree.column("Name", width=450)
         
         self.tree.grid(row=0, column=0, sticky="nsew")
