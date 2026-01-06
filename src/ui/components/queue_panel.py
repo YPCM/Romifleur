@@ -1,0 +1,122 @@
+
+import customtkinter as ctk
+import os
+import json
+from tkinter import filedialog
+
+class QueuePanel(ctk.CTkFrame):
+    def __init__(self, master, app_context, **kwargs):
+        super().__init__(master, **kwargs)
+        self.app = app_context
+        self._setup_ui()
+        
+    def _setup_ui(self):
+        self.grid_rowconfigure(1, weight=1)
+        
+        # Header
+        ctk.CTkLabel(self, text="Download Queue", font=ctk.CTkFont(size=18, weight="bold")).pack(padx=20, pady=20)
+        
+        # List
+        self.queue_list = ctk.CTkScrollableFrame(self, label_text="Pending Items")
+        self.queue_list.pack(fill="both", expand=True, padx=10, pady=(0, 10))
+        
+        self.status_label = ctk.CTkLabel(self, text="0 items")
+        self.status_label.pack(pady=5)
+        
+        # Start Button
+        self.start_btn = ctk.CTkButton(self, text="Start Downloads 🚀", fg_color="#E0a500", text_color="black", command=self._start_download)
+        self.start_btn.pack(padx=20, pady=10, fill="x")
+        
+        # I/O Buttons
+        io_frame = ctk.CTkFrame(self, fg_color="transparent")
+        io_frame.pack(padx=20, pady=(0, 20), fill="x")
+        
+        ctk.CTkButton(io_frame, text="Save 💾", width=80, fg_color="#555", command=self._export).pack(side="left", padx=(0, 5), expand=True, fill="x")
+        ctk.CTkButton(io_frame, text="Load 📂", width=80, fg_color="#555", command=self._import).pack(side="left", padx=(5, 0), expand=True, fill="x")
+        
+        ctk.CTkButton(self, text="Clear All 🗑️", fg_color="#AA0000", command=self._clear).pack(padx=20, pady=(10, 20), fill="x")
+        
+        # Progress
+        self.progress_bar = ctk.CTkProgressBar(self, orientation="horizontal")
+        self.progress_bar.set(0)
+        # Hidden by default
+
+    def add_items(self, category, console, filenames):
+        count = 0
+        for f in filenames:
+            if self.app.download_manager.add_to_queue(category, console, f):
+                count += 1
+        self._refresh_list()
+        return count
+
+    def _refresh_list(self):
+        for widget in self.queue_list.winfo_children():
+            widget.destroy()
+            
+        queue = self.app.download_manager.queue
+        self.status_label.configure(text=f"{len(queue)} items in queue")
+        
+        for i, (cat, console, fname) in enumerate(queue):
+            item_frame = ctk.CTkFrame(self.queue_list, fg_color="transparent")
+            item_frame.pack(fill="x", pady=2)
+            
+            # Remove Button
+            btn = ctk.CTkButton(item_frame, text="❌", width=30, height=20, fg_color="darkred", 
+                                command=lambda idx=i: self._remove(idx))
+            btn.pack(side="right", padx=(5, 0))
+            
+            display = fname[:20] + "..." if len(fname) > 20 else fname
+            ctk.CTkLabel(item_frame, text=f"[{console}] {display}", anchor="w", height=20).pack(side="left", fill="x", expand=True)
+
+    def _remove(self, index):
+        self.app.download_manager.remove_from_queue(index)
+        self._refresh_list()
+
+    def _clear(self):
+        self.app.download_manager.clear_queue()
+        self._refresh_list()
+
+    def _export(self):
+        if not self.app.download_manager.queue: return
+        filename = filedialog.asksaveasfilename(defaultextension=".json", filetypes=[("JSON Files", "*.json")])
+        if filename:
+            with open(filename, 'w') as f:
+                json.dump(self.app.download_manager.queue, f, indent=4)
+
+    def _import(self):
+        filename = filedialog.askopenfilename(filetypes=[("JSON Files", "*.json")])
+        if not filename: return
+        try:
+            with open(filename, 'r') as f:
+                data = json.load(f)
+                if isinstance(data, list):
+                    for item in data:
+                        if len(item) == 3:
+                            self.app.download_manager.add_to_queue(item[0], item[1], item[2])
+            self._refresh_list()
+        except Exception as e:
+            print(f"Import error: {e}")
+
+    def _start_download(self):
+        self.start_btn.configure(state="disabled", text="Downloading...")
+        self.progress_bar.pack(padx=20, pady=(0, 20), fill="x")
+        self.progress_bar.set(0)
+        
+        self.app.download_manager.start_download(
+            progress_callback=self._update_progress,
+            completion_callback=self._on_complete
+        )
+
+    def _update_progress(self, progress, status):
+        # Called from thread, schedule on main loop? 
+        # CTk usually handles thread safety for value updates, but let's be safe if needed.
+        # Ideally using after() but we are in a component. 
+        self.progress_bar.set(progress)
+        self.status_label.configure(text=status)
+
+    def _on_complete(self):
+        self.start_btn.configure(state="normal", text="Start Downloads 🚀")
+        self.progress_bar.pack_forget()
+        self.status_label.configure(text="All Downloads Complete!")
+        self.app.download_manager.clear_queue()
+        self._refresh_list()

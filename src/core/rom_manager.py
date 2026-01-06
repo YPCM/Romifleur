@@ -1,87 +1,21 @@
-import os
-import json
+
 import requests
 from bs4 import BeautifulSoup
 from urllib.parse import unquote
 import re
-import threading
-import time
+import os
+from .config_manager import ConfigManager
 
 class RomManager:
-    def __init__(self, catalog_path="consoles.json"):
-        self.catalog_path = catalog_path
-        self.consoles = self._load_catalog()
+    def __init__(self, config_manager: ConfigManager):
+        self.config = config_manager
+        self.consoles = self.config.consoles
         self.cache = {} # {console_key: [list of files]}
         self.filters = {
             "region": ["(Europe)", "(France)", "(Fr)"],
             "exclude": ["(Demo)", "(Beta)", "(Proto)", "(Kiosk)", "(Sample)", "(Unl)"],
             "deduplicate": True
         }
-        self.settings = self._load_settings()
-
-    def _load_settings(self):
-        try:
-            if os.path.exists("settings.json"):
-                with open("settings.json", "r") as f:
-                    return json.load(f)
-        except Exception as e:
-            print(f"Error loading settings: {e}")
-        return {"roms_path": "ROMs"} # Default
-
-    def save_settings(self):
-        try:
-            with open("settings.json", "w") as f:
-                json.dump(self.settings, f, indent=4)
-        except Exception as e:
-            print(f"Error saving settings: {e}")
-
-    def get_download_path(self):
-        path = self.settings.get("roms_path", "ROMs")
-        # Check if absolute or relative
-        if not os.path.isabs(path):
-            path = os.path.abspath(path)
-            
-        # Check availability (e.g. unplugged SD)
-        if not os.path.exists(path):
-            # Try to create it if it looks like a normal local path
-            try:
-                os.makedirs(path, exist_ok=True)
-            except:
-                # Fallback to local default if drive is missing
-                print(f"Custom path {path} not accessible. Falling back to ./ROMs")
-                default = os.path.abspath("ROMs")
-                os.makedirs(default, exist_ok=True)
-                return default
-        return path
-
-    def _load_catalog(self):
-        import sys
-        
-        def resource_path(relative_path):
-            """ Get absolute path to resource, works for dev and for PyInstaller """
-            try:
-                # PyInstaller creates a temp folder and stores path in _MEIPASS
-                base_path = sys._MEIPASS
-            except Exception:
-                base_path = os.path.abspath(".")
-            return os.path.join(base_path, relative_path)
-
-        try:
-            # Use resource_path to find the json file inside the bundle
-            path = resource_path(self.catalog_path)
-            with open(path, 'r') as f:
-                data = json.load(f)
-            return data
-        except FileNotFoundError:
-            return {}
-
-    def get_console_list(self):
-        """Returns a list of (Category, ConsoleKey, Name)"""
-        flat_list = []
-        for category, consoles in self.consoles.items():
-            for key, data in consoles.items():
-                flat_list.append((category, key, data['name']))
-        return flat_list
 
     def fetch_file_list(self, category, console_key, force_reload=False):
         """Fetches file list from URL, with caching."""
@@ -137,9 +71,6 @@ class RomManager:
             # 3. Region Filter
             if self.filters["region"]:
                 is_region_match = False
-                
-                # Extract tags from filename: e.g. "Game (USA, Europe)" -> ["USA, Europe"]
-                # Then split commas -> ["USA", "Europe"]
                 file_tags = []
                 param_groups = re.findall(r'\((.*?)\)', f)
                 for group in param_groups:
@@ -147,24 +78,16 @@ class RomManager:
                     file_tags.extend(parts)
                 
                 for r in self.filters["region"]:
-                    # Clean filter: "(USA)" -> "usa"
                     clean_r = r.lower().replace('(', '').replace(')', '').strip()
-                    
-                    # Check exact match in file tags (safe)
                     if clean_r in file_tags:
                         is_region_match = True
                         break
                     
-                    # Fallback: if filter is "(Europe)" but tag is "En,Fr,De", we might not match.
-                    # But the user issue is specifically about "USA" in "(USA, Canada)".
-                    # For that case: "usa" is in ["usa", "canada"]. It works.
-
                 if not is_region_match:
                     continue
             
             filtered.append(f)
 
-        # 3. Deduplication (Optional, can be heavy for large lists in real-time)
         if self.filters["deduplicate"]:
             filtered = self._deduplicate(filtered)
             
@@ -172,9 +95,7 @@ class RomManager:
 
     def _deduplicate(self, file_list):
         """Deduplicates list keeping best revisions."""
-        # Map: BaseTitle -> (Score, Filename)
         best_candidates = {}
-        
         for filename in file_list:
             base = self._get_base_title(filename)
             score = self._get_score(filename)
@@ -198,41 +119,26 @@ class RomManager:
     def _get_score(self, filename):
         score = 0
         file_lower = filename.lower()
-        
-        # Region Preference
-        if "(France)" in filename or "(Fr)" in filename:
-            score += 2
-        elif "(Europe)" in filename:
-            score += 1
-            
-        # Penalize Virtual Console
-        if "Virtual Console" in filename:
-            score -= 50
-            
+        if "(France)" in filename or "(Fr)" in filename: score += 2
+        elif "(Europe)" in filename: score += 1
+        if "Virtual Console" in filename: score -= 50
         return score
 
     def download_file(self, category, console_key, filename, progress_callback=None):
-        """Downloads a single file with progress updates."""
+        """Downloads a single file."""
         try:
             config = self.consoles[category][console_key]
             base_url = config['url']
-            # Myrient/Archive handling
+            
             if "myrient" in base_url or "archive.org" in base_url:
-                 # Ensure proper URL joining
                  if not base_url.endswith("/"): base_url += "/"
-                 # Filenames in hrefs are usually urlencoded, but here we have the decoded filename
-                 # We need to quote it back for the request, BUT Requests handles this if we passparams?
-                 # Actually simply quoting the filename component is safest.
                  from urllib.parse import quote
                  download_url = base_url + quote(filename)
             else:
-                 download_url = base_url + filename # Fallback
+                 download_url = base_url + filename
             
-            # Use 'folder' from config if available, else console_key
             folder_name = config.get('folder', console_key)
-            
-            # Use dynamic root path
-            root_path = self.get_download_path()
+            root_path = self.config.get_download_path()
             save_dir = os.path.join(root_path, folder_name)
             
             os.makedirs(save_dir, exist_ok=True)
@@ -258,7 +164,6 @@ class RomManager:
             
             os.replace(filepath + ".tmp", filepath)
             
-            # Extraction logic could go here
             if filename.endswith((".zip", ".7z")):
                 self._extract(filepath)
                 
@@ -271,7 +176,6 @@ class RomManager:
             return False
 
     def _extract(self, filepath):
-        # reuse extraction logic
         import zipfile
         import py7zr
         try:
@@ -280,6 +184,6 @@ class RomManager:
                 with zipfile.ZipFile(filepath, 'r') as z: z.extractall(directory)
             elif filepath.endswith(".7z"):
                 with py7zr.SevenZipFile(filepath, 'r') as z: z.extractall(directory)
-            os.remove(filepath) # Cleanup
+            os.remove(filepath)
         except Exception as e:
             print(f"Extraction error: {e}")

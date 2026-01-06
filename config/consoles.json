@@ -84,14 +84,18 @@
             "folder": "saturn",
             "url": "https://myrient.erista.me/files/Redump/Sega%20-%20Saturn/",
             "exts": [".zip", ".7z", ".bin", ".cue"],
-            "best_games": ["Panzer Dragoon Saga", "Nights into Dreams", "Sega Rally", "Virtua Fighter 2", "Radiant Silvergun"]
+            "best_games": ["Panzer Dragoon Saga", "Nights Into Dreams", "Sega Rally", "Virtua Fighter 2", "Radiant Silvergun",
+        "Guardian Heroes", "Saturn Bomberman", "Panzer Dragoon Zwei", "Shining Force III", "Dragon Force",
+        "Street Fighter Alpha 3", "Legend of Oasis", "X-Men Vs. Street Fighter", "Burning Rangers", "Fighters Megamix"]
         },
         "Dreamcast": {
             "name": "Dreamcast",
             "folder": "dreamcast",
             "url": "https://myrient.erista.me/files/Redump/Sega%20-%20Dreamcast/",
             "exts": [".zip", ".7z", ".gdi", ".chd"],
-            "best_games": ["SoulCalibur", "Jet Set Radio", "Shenmue", "Marvel vs. Capcom 2", "Crazy Taxi"]
+            "best_games": ["SoulCalibur", "Jet Set Radio", "Jet Grind Radio", "Skies of Arcadia", "Crazy Taxi", "Marvel vs. Capcom 2",
+        "Code: Veronica", "Phantasy Star Online", "Shenmue", "Sonic Adventure", "Power Stone 2",
+        "Ikaruga", "Samba de Amigo", "Quake III", "Rez"]
         },
         "GameGear": {
             "name": "Game Gear",
@@ -107,14 +111,18 @@
             "folder": "psx",
             "url": "https://myrient.erista.me/files/Redump/Sony%20-%20PlayStation/",
             "exts": [".zip", ".7z", ".chd", ".bin"],
-            "best_games": ["Metal Gear Solid", "Final Fantasy VII", "Symphony of the Night", "Tekken 3", "Resident Evil 2"]
+            "best_games": ["Metal Gear Solid", "Final Fantasy VII", "Symphony of the Night", "Tekken 3", "Tony Hawk's Pro Skater 2",
+        "Resident Evil 2", "Gran Turismo 2", "Silent Hill", "Crash Bandicoot 3", "Warped", "Spyro the Dragon",
+        "Tomb Raider", "Vagrant Story", "Final Fantasy IX", "Chrono Cross", "Medal of Honor"]
         },
         "PSP": {
             "name": "PlayStation Portable",
             "folder": "psp",
             "url": "https://myrient.erista.me/files/Redump/Sony%20-%20PlayStation%20Portable/",
             "exts": [".zip", ".7z", ".iso"],
-            "best_games": ["God of War: Ghost of Sparta", "Persona 3 Portable", "Crisis Core", "Metal Gear Solid: Peace Walker", "Monster Hunter Freedom Unite"]
+            "best_games": ["Ghost of Sparta", "Persona 3", "Crisis Core", "Peace Walker", "Monster Hunter Freedom Unite",
+        "Birth by Sleep", "Lumines", "War of the Lions", "Vice City Stories", "Liberty City Stories",
+        "Chains of Olympus", "Jeanne d'Arc", "Valkyria Chronicles 2", "Tactics Ogre", "Daxter"]
         },
         "PS2": {
             "name": "PlayStation 2",
@@ -130,14 +138,14 @@
             "folder": "ngpc",
             "url": "https://myrient.erista.me/files/No-Intro/SNK%20-%20NeoGeo%20Pocket%20Color/",
             "exts": [".zip", ".7z", ".ngc"],
-            "best_games": ["Metal Slug", "King of Fighters", "Samurai Shodown", "Last Blade", "Garou"]
+            "best_games": ["Metal Slug", "King of Fighters", "Samurai Shodown", "Last Blade", "Garou", "SVC Chaos", "SNK Gals' Fighters"]
         },
         "PC_Engine": {
             "name": "PC Engine / TurboGrafx-16",
             "folder": "pcengine",
             "url": "https://myrient.erista.me/files/No-Intro/NEC%20-%20PC%20Engine%20-%20TurboGrafx-16/",
             "exts": [".zip", ".7z", ".pce"],
-            "best_games": ["R-Type", "Bonk's Adventure", "Bomberman '93", "Ninja Spirit", "Ys Book I & II"]
+            "best_games": ["R-Type", "Bonk's Adventure", "Bomberman '93", "Ninja Spirit", "Ys Book I & II", "Castlevania: Rondo of Blood", "Military Madness", "Alien Crush", "Blazing Lazers", "Neutopia"]
         },
         "Atari2600": {
             "name": "Atari 2600",

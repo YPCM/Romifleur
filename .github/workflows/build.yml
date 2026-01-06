@@ -25,15 +25,16 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install customtkinter requests beautifulsoup4 pillow pyinstaller py7zr
+          pip install -r requirements.txt
+          pip install pyinstaller
 
       - name: Generate Icon (if missing)
         run: |
-          python -c "from PIL import Image; import os; img = Image.open('logo-romifleur-mini.png') if os.path.exists('logo-romifleur-mini.png') else Image.new('RGB', (256, 256)); img.save('icon.ico', format='ICO', sizes=[(256, 256)])"
+          python -c "from PIL import Image; import os; img = Image.open('assets/logo-romifleur-mini.png') if os.path.exists('assets/logo-romifleur-mini.png') else Image.new('RGB', (256, 256)); img.save('icon.ico', format='ICO', sizes=[(256, 256)])"
 
       - name: Build with PyInstaller
         run: |
-          pyinstaller --noconsole --onefile --icon=icon.ico --name Romifleur --add-data "consoles.json;." --add-data "logo-romifleur.png;." --add-data "logo-romifleur-mini.png;." --collect-all customtkinter main.py
+          pyinstaller Romifleur.spec
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
@@ -55,15 +56,16 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install customtkinter requests beautifulsoup4 pillow pyinstaller py7zr
+          pip install -r requirements.txt
+          pip install pyinstaller
 
       - name: Generate Icon (if missing)
         run: |
           python -c "
           from PIL import Image
           import os
-          if os.path.exists('logo-romifleur-mini.png'):
-              img = Image.open('logo-romifleur-mini.png')
+          if os.path.exists('assets/logo-romifleur-mini.png'):
+              img = Image.open('assets/logo-romifleur-mini.png')
           else:
               img = Image.new('RGB', (256, 256))
           img.save('icon.icns', format='ICNS')
@@ -71,13 +73,13 @@ jobs:
 
       - name: Build with PyInstaller
         run: |
-          pyinstaller --noconsole --onefile --icon=icon.icns --name Romifleur --add-data "consoles.json:." --add-data "logo-romifleur.png:." --add-data "logo-romifleur-mini.png:." --collect-all customtkinter main.py
+          pyinstaller Romifleur.spec
 
       - name: Create DMG
         run: |
           # Créer un dossier pour le DMG
           mkdir -p dmg_content
-          cp dist/Romifleur dmg_content/
+          cp -r dist/Romifleur.app dmg_content/
 
           # Créer le DMG
           hdiutil create -volname "Romifleur" -srcfolder dmg_content -ov -format UDZO Romifleur-macOS-ARM.dmg
@@ -107,16 +109,12 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install customtkinter requests beautifulsoup4 pillow pyinstaller py7zr
+          pip install -r requirements.txt
+          pip install pyinstaller
 
       - name: Build with PyInstaller
         run: |
-          pyinstaller --noconsole --onefile --name Romifleur \
-            --add-data "consoles.json:." \
-            --add-data "logo-romifleur.png:." \
-            --add-data "logo-romifleur-mini.png:." \
-            --collect-all customtkinter \
-            main.py
+          pyinstaller Romifleur.spec
 
       - name: Make executable
         run: chmod +x dist/Romifleur
@@ -136,7 +134,7 @@ jobs:
 
           # 2. Copy binary and assets
           cp dist/Romifleur AppDir/usr/bin/
-          cp logo-romifleur-mini.png AppDir/usr/share/icons/hicolor/256x256/apps/romifleur.png
+          cp assets/logo-romifleur-mini.png AppDir/usr/share/icons/hicolor/256x256/apps/romifleur.png
 
           # 3. Create Desktop file
           cat > AppDir/usr/share/applications/romifleur.desktop <<EOF
