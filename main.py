@@ -14,7 +14,7 @@ class App(ctk.CTk):
     def __init__(self):
         super().__init__()
         
-        self.VERSION = "v1.1.0"
+        self.VERSION = "v1.1.1"
 
         # Manager
         self.manager = RomManager()
