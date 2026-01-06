@@ -129,7 +129,10 @@ class GameList(ctk.CTkFrame):
         self.scrollbar.grid(row=0, column=1, sticky="ns")
         self.tree.configure(yscrollcommand=self.scrollbar.set)
         
+        self.tree.configure(yscrollcommand=self.scrollbar.set)
+        
         self.tree.bind("<Button-1>", self._on_click)
+        self.tree.bind("<Double-1>", self._on_double_click)
 
     def load_console(self, category, console_key):
         self.current_category = category
@@ -193,6 +196,15 @@ class GameList(ctk.CTkFrame):
                     vals = self.tree.item(row_id, "values")
                     new_val = "☑" if vals[0] == "☐" else "☐"
                     self.tree.item(row_id, values=(new_val, vals[1]))
+
+    def _on_double_click(self, event):
+        row_id = self.tree.identify_row(event.y)
+        if row_id:
+            vals = self.tree.item(row_id, "values")
+            # vals = (checkbox_status, filename)
+            filename = vals[1]
+            if self.on_add_queue:
+                self.on_add_queue(self.current_category, self.current_console, [filename])
 
     def _toggle_select_all(self):
         children = self.tree.get_children()
