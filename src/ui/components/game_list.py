@@ -14,6 +14,7 @@ class GameList(ctk.CTkFrame):
         
         self.current_results = []
         self.selected_files = set()
+        self.showing_best = False
         
         self._load_icons()
         self._setup_ui()
@@ -138,6 +139,10 @@ class GameList(ctk.CTkFrame):
         self.current_category = category
         self.current_console = console_key
         
+        # Reset Best Games state
+        self.showing_best = False
+        self.best_btn.configure(text="Load Best Games", fg_color="green")
+        
         name = self.app.rom_manager.consoles[category][console_key]['name']
         self.info_label.configure(text=f"Loading {name}...")
         
@@ -236,6 +241,13 @@ class GameList(ctk.CTkFrame):
         # Implementation similar to main logic but simplified helper
         if not hasattr(self, 'current_console'): return
         
+        if self.showing_best:
+            # Revert to full list (filters applied)
+            self._apply_filters()
+            self.showing_best = False
+            self.best_btn.configure(text="Load Best Games", fg_color="green")
+            return
+
         config = self.app.rom_manager.consoles[self.current_category][self.current_console]
         best_list = config.get("best_games", [])
         
@@ -258,3 +270,7 @@ class GameList(ctk.CTkFrame):
         
         self.search_var.set("") # Clear search
         self._populate_tree(matches)
+        
+        # Update UI state
+        self.showing_best = True
+        self.best_btn.configure(text="Back to All Games", fg_color="#444")
