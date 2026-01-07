@@ -4,7 +4,7 @@ import os
 
 datas = [('config/consoles.json', 'config'), ('assets/logo-romifleur.png', '.'), ('assets/logo-romifleur-mini.png', '.'), ('assets', 'assets')]
 binaries = []
-hiddenimports = []
+hiddenimports = ['PIL._tkinter_finder', 'PIL.ImageTk']
 tmp_ret = collect_all('customtkinter')
 datas += tmp_ret[0]; binaries += tmp_ret[1]; hiddenimports += tmp_ret[2]
 

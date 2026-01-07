@@ -218,7 +218,7 @@ class GameList(ctk.CTkFrame):
         # Apply RA Only Filter
         if self.ra_only_switch.get():
             ra_games = self.app.ra_manager.get_supported_games(self.current_console)
-            results = [f for f in results if self.app.ra_manager.is_compatible(f, ra_games)]
+            results = [f for f in results if self.app.ra_manager.is_compatible(f["name"], ra_games)]
 
         self._populate_tree(results)
 
