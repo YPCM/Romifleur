@@ -11,6 +11,7 @@ class Sidebar(ctk.CTkFrame):
         
         self.category_frames = {}
         self.category_buttons = {}
+        self.active_btn = None
         
         self._setup_ui()
         self._populate_list()
@@ -91,8 +92,32 @@ class Sidebar(ctk.CTkFrame):
             name = consoles_data[key].get('name', key)
             c_btn = ctk.CTkButton(content_frame, text=name, anchor="w", fg_color="transparent", 
                                   hover_color="#3A3A3A", height=24,
-                                  command=lambda c=category, k=key: self.on_console_select(c, k))
+                                  command=lambda col=category, k=key: self._handle_selection(col, k))
             c_btn.pack(fill="x", pady=1)
+            
+            # Store if we need to access via key later, but for now active_btn is enough tracking via clicking
+            # Actually we need the button instance to change its color inside lambda, 
+            # but better to pass the click event or binding, or just better structure.
+            # Lambda constraints: We can't easily pass self.c_btn because it's overwritten
+            # Let's use a factory or immediate binding. 
+            
+            # Better approach:
+            self._bind_button(c_btn, category, key)
+
+    def _bind_button(self, btn, category, key):
+        btn.configure(command=lambda: self._handle_selection(btn, category, key))
+
+    def _handle_selection(self, btn, category, key):
+        # Reset previous
+        if self.active_btn:
+            self.active_btn.configure(fg_color="transparent")
+            
+        # Set new
+        self.active_btn = btn
+        self.active_btn.configure(fg_color=["#3a7ebf", "#1f538d"]) # Standard active blue
+        
+        # Callback
+        self.on_console_select(category, key)
 
     def _open_roms_folder(self):
         path = self.app.config.get_download_path()
