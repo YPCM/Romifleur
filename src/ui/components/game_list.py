@@ -116,7 +116,7 @@ class GameList(ctk.CTkFrame):
 
         self.tree = ttk.Treeview(self.tree_frame, columns=("Select", "Name"), show="tree headings", selectmode="extended")
         
-        self.tree.heading("#0", text="RA", anchor="center")
+        self.tree.heading("#0", text="", anchor="center")
         self.tree.column("#0", width=ra_width, stretch=False, anchor="center")
         
         self.tree.heading("Select", text="[x]", anchor="center")
@@ -190,6 +190,15 @@ class GameList(ctk.CTkFrame):
             self.tree.insert("", "end", text="", image=img, values=("☐", f))
             
         self.info_label.configure(text=f"{len(files)} games found")
+        self._update_header_icon()
+
+    def _update_header_icon(self):
+        api_key = self.app.ra_manager.api_key
+        img = self.img_trophy if api_key else self.img_question
+        
+        # Treeview heading image support depends on theme/style but usually works for #0
+        # If text is empty, image centers.
+        self.tree.heading("#0", image=img)
 
     def _on_click(self, event):
         region = self.tree.identify("region", event.x, event.y)
