@@ -1,8 +1,8 @@
 # Romifleur
 
-![Romifleur Logo](logo-romifleur.png)
+![Romifleur Logo](assets/logo-romifleur.png)
 
-![Romifleur Screenshot](Romifleur_screen.png)
+![Romifleur Screenshot](assets/Romifleur_screen.png)
 
 ---
 
