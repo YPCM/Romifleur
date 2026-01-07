@@ -14,7 +14,11 @@ class GameList(ctk.CTkFrame):
         
         self.current_results = []
         self.selected_files = set()
+        self.selected_files = set()
         self.showing_best = False
+        self.ra_sort_desc = True # Default sort order for RA
+        
+        self._load_icons()
         
         self._load_icons()
         self._setup_ui()
@@ -39,6 +43,37 @@ class GameList(ctk.CTkFrame):
         self.grid_rowconfigure(2, weight=1)
         self.grid_columnconfigure(0, weight=1)
         
+        # Configure ttk Styles (doing it here to ensure it applies before widget creation if needed, 
+        # though theme_use updates existing ones)
+        style = ttk.Style()
+        style.theme_use("clam")
+        
+        # Combobox: Flat, Dark, White Arrow
+        # We must configure the distinct elements for Clam theme to remove the 3D button feel
+        style.configure("TCombobox", 
+                        fieldbackground="#343638", 
+                        background="#343638", 
+                        foreground="white", 
+                        arrowcolor="white",
+                        darkcolor="#343638", # Removes 3D border shadow
+                        lightcolor="#343638", # Removes 3D border highlight
+                        selectbackground="#343638",
+                        selectforeground="white",
+                        borderwidth=0,
+                        arrowsize=14)
+                        
+        style.map("TCombobox", 
+                  fieldbackground=[("readonly", "#343638"), ("active", "#343638")], 
+                  background=[("readonly", "#343638"), ("active", "#404040"), ("pressed", "#2b2b2b")], 
+                  foreground=[("readonly", "white")],
+                  arrowcolor=[("readonly", "white")])
+                  
+        # Dropdown list styling (OptionDB)
+        self.master.option_add("*TCombobox*Listbox.background", "#343638")
+        self.master.option_add("*TCombobox*Listbox.foreground", "white")
+        self.master.option_add("*TCombobox*Listbox.selectBackground", "#1f538d")
+        self.master.option_add("*TCombobox*Listbox.selectForeground", "white")
+        
         # Header (Filters)
         self.header = ctk.CTkFrame(self, fg_color="transparent")
         self.header.grid(row=0, column=0, sticky="ew", padx=20, pady=10)
@@ -49,13 +84,17 @@ class GameList(ctk.CTkFrame):
         self.search_entry.pack(side="left", padx=(0, 10))
         
         self.region_var = ctk.StringVar(value="Europe")
-        self.region_opt = ctk.CTkOptionMenu(self.header, values=["All Regions", "Europe", "USA", "Japan"], 
-                                            command=self._on_filter_change, variable=self.region_var, width=120)
+        self.region_opt = ttk.Combobox(self.header, values=["All Regions", "Europe", "USA", "Japan"], 
+                                         textvariable=self.region_var, width=15, state="readonly")
+        self.region_opt.bind("<<ComboboxSelected>>", self._on_filter_change)
         self.region_opt.pack(side="left", padx=10)
         
         self.exclude_switch = ctk.CTkSwitch(self.header, text="No Demo/Beta", command=self._on_filter_change)
         self.exclude_switch.select()
         self.exclude_switch.pack(side="left", padx=10)
+        
+        self.ra_only_switch = ctk.CTkSwitch(self.header, text="RA Supported Only", command=self._on_filter_change)
+        self.ra_only_switch.pack(side="left", padx=10)
         
         # Info Label
         self.info_label = ctk.CTkLabel(self, text="Select a console to begin", font=ctk.CTkFont(size=16))
@@ -110,13 +149,14 @@ class GameList(ctk.CTkFrame):
                         font=("Arial", heading_font_size, "bold"))
         style.map("Treeview", background=[('selected', '#1f538d')])
         
+        # Configure Combobox style to match dark theme
         # Scale column widths
         select_width = int(40 * scaling)
         ra_width = int(40 * scaling)
 
         self.tree = ttk.Treeview(self.tree_frame, columns=("Select", "Name"), show="tree headings", selectmode="extended")
         
-        self.tree.heading("#0", text="", anchor="center")
+        self.tree.heading("#0", text="", anchor="center", command=self._sort_by_ra)
         self.tree.column("#0", width=ra_width, stretch=False, anchor="center")
         
         self.tree.heading("Select", text="[x]", anchor="center")
@@ -171,6 +211,11 @@ class GameList(ctk.CTkFrame):
         query = self.search_var.get()
         results = self.app.rom_manager.search(self.current_category, self.current_console, query)
         
+        # Apply RA Only Filter
+        if self.ra_only_switch.get():
+            ra_games = self.app.ra_manager.get_supported_games(self.current_console)
+            results = [f for f in results if self.app.ra_manager.is_compatible(f, ra_games)]
+
         self._populate_tree(results)
 
     def _populate_tree(self, files):
@@ -245,6 +290,29 @@ class GameList(ctk.CTkFrame):
                 
         if items and self.on_add_queue:
             self.on_add_queue(self.current_category, self.current_console, items)
+
+            self.on_add_queue(self.current_category, self.current_console, items)
+
+    def _sort_by_ra(self):
+        if not self.current_results: return
+        
+        # Toggle sort
+        self.ra_sort_desc = not self.ra_sort_desc
+        
+        # Data needed for sort
+        ra_games = self.app.ra_manager.get_supported_games(self.current_console)
+        
+        # Sort logic
+        # We sort by (is_compatible, filename)
+        # Using a stable sort key
+        def sort_key(filename):
+            is_ra = self.app.ra_manager.is_compatible(filename, ra_games)
+            # Tuple comparison: True > False so (True, name) comes after (False, name) in Ascending
+            # If we want Compatible FIRST in Descending:
+            return (is_ra, filename.lower())
+        
+        self.current_results.sort(key=sort_key, reverse=self.ra_sort_desc)
+        self._populate_tree(self.current_results)
 
     def _load_best_games(self):
         # Implementation similar to main logic but simplified helper
