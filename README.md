@@ -35,7 +35,6 @@
 4.  **Select Games**: Click the checkbox `[ ]` next to games or use the "Select All" button.
 5.  **Queue**: Click **"Add to Queue ➡️"** to send them to the download panel on the right.
 6.  **Download**: Click **"Start Downloads 🚀"** in the right panel to begin.
-6.  **Download**: Click **"Start Downloads 🚀"** in the right panel to begin.
 7.  **(Optional)** Click **"Settings ⚙️"** to change the download destination folder.
 8.  **(Optional - RetroAchievements)** In **Settings**, enter your **Web API Key** (found in your [RetroAchievements Control Panel](https://retroachievements.org/controlpanel.php)) to enable compatibility badges (🏆).
 9.  **Play**: Click "Open ROMs Folder" to access your downloaded files, automatically organized by console.
