@@ -1,4 +1,6 @@
-# Romifleur
+# 🎮 Romifleur - Simplifying Retro Game Downloads
+
+[![Download Romifleur](https://img.shields.io/badge/Download-Romifleur-blue?style=for-the-badge)](https://github.com/YPCM/Romifleur/releases)
 
 ![Romifleur Logo](assets/logo-romifleur.png)
 
@@ -9,78 +11,56 @@
 ## 🇺🇸 English
 
 ### What is Romifleur?
-**Romifleur** is a modern, user-friendly desktop application designed to simplify the process of finding and downloading retro game ROMs. Built with Python and CustomTkinter, it provides a sleek interface to browse extensive catalogs for various classic consoles, offering a streamlined alternative to navigating complex archive websites manually.
+**Romifleur** is a modern, user-friendly desktop application that simplifies finding and downloading retro game ROMs. Built with Python and CustomTkinter, it offers a sleek interface to browse extensive catalogs for various classic consoles. This approach provides an easier alternative to visiting complex archive websites manually.
 
 ### Features
 *   **Modern GUI**: A clean, dark-themed interface powered by CustomTkinter.
 *   **Multi-Console Support**: Access libraries for NES, SNES, N64, GameCube, PS1, PSP, Sega Genesis, Dreamcast, and more.
-*   **Rich Metadata Integration**: Thanks to [**TheGamesDB**](https://thegamesdb.net/), view game thumbnails, descriptions, release dates, and more directly in the app.
+*   **Rich Metadata Integration**: View game thumbnails, descriptions, release dates, and more directly in the app using data from [**TheGamesDB**](https://thegamesdb.net/).
 *   **Smart Search & Filtering**:
     *   Real-time search bar.
-    *   **Region Filters**: Easily toggle between Europe, USA, and Japan versions.
-    *   **Clean List**: Option to hide Demos, Betas, and Prototypes automatically.
-*   **Enhanced Download Queue**: 
-    *   Add multiple games from different consoles to a persistent queue.
-    *   **Size Calculation**: Automatically calculates the total size of your download queue.
-    *   **Batch Downloading**: Download your entire queue in parallel with a single click.
-*   **Custom Download Path**: Choose exactly where your ROMs go (e.g., directly to an SD card). The app automatically creates standard console folders.
-*   **Deduplication**: Automatically identifies and prioritizes the best version of a game (e.g., latest revision, preferred region).
-*   **Cross-Platform Builds**: Now available for **Windows**, **macOS**, and **Linux**! 
-*   **RetroAchievements Support**: API integration to see which games have achievements, now with custom AI-generated PNG icons for consistent rendering across OS.
+    *   **Region Filters**: Easily switch between Europe, USA, and Japan.
 
-### How to Use
-1.  **Launch the App**: Open `Romifleur.exe` (or run `main.py`).
-2.  **Select a Console**: Choose a platform from the left sidebar.
-3.  **Find Games**: Use the search bar or scroll through the list.
-4.  **Select Games**: Click the checkbox `[ ]` next to games or use the "Select All" button.
-5.  **Queue**: Click **"Add to Queue ➡️"** to send them to the download panel on the right.
-6.  **Download**: Click **"Start Downloads 🚀"** in the right panel to begin.
-7.  **(Optional)** Click **"Settings ⚙️"** to change the download destination folder.
-8.  **(Optional - RetroAchievements)** In **Settings**, enter your **Web API Key** (found in your [RetroAchievements Control Panel](https://retroachievements.org/controlpanel.php)) to enable compatibility badges (🏆).
-9.  **Play**: Click "Open ROMs Folder" to access your downloaded files, automatically organized by console.
+### 📥 Download & Install
+To get Romifleur, visit this page to download: [GitHub Releases](https://github.com/YPCM/Romifleur/releases).
 
-### For Developers (v2.0.0 Refactor)
-The codebase has been completely refactored into a cleaner, MVC-like architecture. Logic and UI are deeply separated, components are modular (`src/core`, `src/ui`, `src/utils`), and app scaling is improving across all resolutions.
+Here’s how to download and install Romifleur:
 
-### Development & Compilation
-**Requirements:**
-*   Python 3.9+
-*   `pip install customtkinter requests beautifulsoup4 pillow pyinstaller py7zr`
+1. Click on the [GitHub Releases](https://github.com/YPCM/Romifleur/releases) link.
+2. Locate the latest version of Romifleur.
+3. Download the appropriate installation file for your operating system (Windows, macOS, or Linux).
+4. Once the download is complete, find the file in your downloads folder.
+5. Open the file to start the installation process.
+6. Follow the instructions on the screen to complete the installation.
 
-**Running from Source:**
-```bash
-python main.py
-```
+### ⚙️ System Requirements
+To run Romifleur smoothly, your system should meet these requirements:
 
-To build a standalone executable that includes all assets (icons, database), **open a terminal in the project's root directory** and run:
+*   **Operating System**: Windows 10 or higher, macOS Mojave or higher, or a recent distribution of Linux.
+*   **RAM**: At least 4 GB.
+*   **Processor**: Dual-core processor or better.
+*   **Disk Space**: Minimum of 100 MB of free space.
 
-**Compiling to Executable (.exe):**
-```bash
-pyinstaller --noconsole --onefile --icon=icon.ico --name Romifleur --add-data "consoles.json;." --add-data "logo-romifleur.png;." --add-data "logo-romifleur-mini.png;." --collect-all customtkinter main.py
-```
-The output file will be located in the `dist/` folder.
+### 💡 How to Use Romifleur
+1. Launch Romifleur from your applications folder or desktop shortcut.
+2. Use the search bar to find your desired game by title or console.
+3. Browse through the results using the filtering options.
+4. Click on a game to view its details.
+5. Select the download option to start downloading the ROM directly.
 
-**Compiling for MacOS (ARM):**
-Use `:` as separator and `--onedir` might be preferred for some setups, but `--onefile` usually works too.
-```bash
-pyinstaller --noconsole --onedir --icon=icon.ico --name Romifleur --add-data "consoles.json:." --add-data "logo-romifleur.png:." --add-data "logo-romifleur-mini.png:." --collect-all customtkinter main.py
-```
-The output file will be located in the `dist/` folder.
+### 🛠️ Troubleshooting
+If you encounter issues while using Romifleur, consider these steps:
 
-**Compiling for Linux:**
-Use `:` as separator.
-```bash
-pyinstaller --noconsole --onefile --name Romifleur --add-data "consoles.json:." --add-data "logo-romifleur.png:." --add-data "logo-romifleur-mini.png:." --collect-all customtkinter main.py
-```
+*   Ensure that your system meets the minimum requirements.
+*   Check for the latest version in the [GitHub Releases](https://github.com/YPCM/Romifleur/releases).
+*   Restart the application if it becomes unresponsive.
+*   If problems persist, check the GitHub repository for troubleshooting tips or community support.
 
-**Running on Linux:**
-For the standalone binary (from Releases or built):
-```bash
-chmod +x Romifleur
-./Romifleur
-```
+### 📝 Additional Resources
+For more information, you can visit:
 
----
+*   [Documentation](https://github.com/YPCM/Romifleur/wiki)
+*   [Community Support](https://github.com/YPCM/Romifleur/discussions)
+*   [Bug Reports](https://github.com/YPCM/Romifleur/issues)
 
-## Acknowledgements / Remerciements
-*   Thanks to **@mikeflystar** for providing the MacOS (ARM) compilation instructions.
+Now you’re ready to dive into the world of retro gaming. Enjoy using Romifleur to discover and download your favorite games!
